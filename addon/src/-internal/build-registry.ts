@@ -14,7 +14,7 @@ import type { FullName } from '@ember/owner';
 import {
   ContainerProxyMixin,
   RegistryProxyMixin,
-} from './-owner-mixin-imports';
+} from './-owner-mixin-imports.ts';
 
 /**
  * Adds methods that are normally only on registry to the container. This is largely to support the legacy APIs
@@ -24,7 +24,7 @@ import {
  * @param {Object} container  the container to modify
  */
 function exposeRegistryMethodsWithoutDeprecations(container: any) {
-  let methods = [
+  const methods = [
     'register',
     'unregister',
     'resolve',
@@ -39,7 +39,7 @@ function exposeRegistryMethodsWithoutDeprecations(container: any) {
   ];
 
   for (let i = 0, l = methods.length; i < l; i++) {
-    let methodName = methods[i];
+    const methodName = methods[i];
 
     if (methodName && methodName in container) {
       const knownMethod = methodName;
@@ -88,7 +88,7 @@ const Owner = EmberObject.extend(RegistryProxyMixin, ContainerProxyMixin, {
  * @returns {Object} owner, container, registry
  */
 export default function buildRegistry(resolver: Resolver) {
-  let namespace = new Application();
+  const namespace = new Application();
   // @ts-ignore: this is actually the correcct type, but there was a typo in
   // Ember's docs for many years which meant that there was a matching problem
   // in the types for Ember's definition of `Engine`. Once we require at least
@@ -100,13 +100,13 @@ export default function buildRegistry(resolver: Resolver) {
   };
 
   // @ts-ignore: this is private API.
-  let fallbackRegistry = Application.buildRegistry(namespace);
+  const fallbackRegistry = Application.buildRegistry(namespace);
   // TODO: only do this on Ember < 3.13
   // @ts-ignore: this is private API.
   fallbackRegistry.register('component-lookup:main', Ember.ComponentLookup);
 
   // @ts-ignore: this is private API.
-  let registry = new Ember.Registry({
+  const registry = new Ember.Registry({
     fallback: fallbackRegistry,
   });
 
@@ -124,7 +124,7 @@ export default function buildRegistry(resolver: Resolver) {
   // @ts-ignore: this is private API.
   registry.describe = fallbackRegistry.describe;
 
-  let owner = Owner.create({
+  const owner = Owner.create({
     // @ts-ignore -- we do not have type safety for `Object.extend` so the type
     // of `Owner` here is just `EmberObject`, but we *do* constrain it to allow
     // only types from the actual class, so these fields are not accepted.
@@ -141,7 +141,7 @@ export default function buildRegistry(resolver: Resolver) {
   }) as unknown as Owner;
 
   // @ts-ignore: this is private API.
-  let container = registry.container({ owner: owner });
+  const container = registry.container({ owner: owner });
   // @ts-ignore: this is private API.
   owner.__container__ = container;
 
@@ -153,7 +153,7 @@ export default function buildRegistry(resolver: Resolver) {
     // available on the globalContext and hence ember-data wouldn't be setup
     // correctly for the tests; that's why we import and call setupContainer
     // here; also see https://github.com/emberjs/data/issues/4071 for context
-    let setupContainer = require('ember-data/setup-container')['default'];
+    const setupContainer = require('ember-data/setup-container')['default'];
     setupContainer(owner);
   }
 
