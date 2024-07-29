@@ -2,8 +2,12 @@ import type { Resolver } from '@ember/owner';
 import ApplicationInstance from '@ember/application/instance';
 import Application from '@ember/application';
 import EmberObject from '@ember/object';
+import {
+  dependencySatisfies,
+  macroCondition,
+  importSync,
+} from '@embroider/macros';
 
-import require, { has } from 'require';
 import Ember from 'ember';
 
 import type { FullName } from '@ember/owner';
@@ -147,14 +151,21 @@ export default function buildRegistry(resolver: Resolver) {
 
   exposeRegistryMethodsWithoutDeprecations(container);
 
-  if (has('ember-data/setup-container')) {
-    // ember-data is a proper ember-cli addon since 2.3; if no 'import
-    // 'ember-data'' is present somewhere in the tests, there is also no `DS`
-    // available on the globalContext and hence ember-data wouldn't be setup
-    // correctly for the tests; that's why we import and call setupContainer
-    // here; also see https://github.com/emberjs/data/issues/4071 for context
-    const setupContainer = require('ember-data/setup-container')['default'];
-    setupContainer(owner);
+  if (macroCondition(dependencySatisfies('ember-data', '>= 2.3'))) {
+    // starting in ember-data 5.2, this code is deprecated without replacement.
+    // See: ember-data/dist/setup-container.js
+    if (macroCondition(dependencySatisfies('ember-data', '< 6.0'))) {
+      // ember-data is a proper ember-cli addon since 2.3; if no 'import
+      // 'ember-data'' is present somewhere in the tests, there is also no `DS`
+      // available on the globalContext and hence ember-data wouldn't be setup
+      // correctly for the tests; that's why we import and call setupContainer
+      // here; also see https://github.com/emberjs/data/issues/4071 for context
+      const { default: setupContainer } = importSync(
+        'ember-data/setup-container',
+      ) as any;
+
+      setupContainer(owner);
+    }
   }
 
   return {
