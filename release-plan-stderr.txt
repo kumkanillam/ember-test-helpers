@@ -1,0 +1,11 @@
+Warning: unknown package "test-app"
+Warning: unknown package "type-tests"
+# Unlabeled Changes
+
+* Other
+  * [#2](https://github.com/emberjs/ember-test-helpers/pull/2) Make sure container and resolver normalize the same way ([@marcoow](https://github.com/marcoow))
+* `@ember/test-helpers`
+  * Configure testem for CI testing ([@dgeb](https://github.com/dgeb))
+
+
+*Cannot plan release until the above changes are labeled*.
