@@ -1,5 +1,8 @@
 # Changelog
 
+## Modified 
+for dist creation after changing resolutions.
+
 ## Release (2024-07-23)
 
 @ember/test-helpers 3.3.1 (patch)
